@@ -32,19 +32,73 @@ SearchModal.prototype.hide = function() {
   $("#" + this.DOMID).modal("hide");
 };
 
-var changeLayout = function(DisplayType) {
+function SearchResultsDisplay(DOMID) {
   "use strict";
   
+  this.DOMID = DOMID;
+}
+
+SearchResultsDisplay.prototype.displaySearchResults = function(searchResults) {
+  "use strict";
+  
+  var searchText = searchResults[0];
+  //Create panel to contain all of the search results.
+  var mainPanel = "";
+  mainPanel += "<div class='panel panel-default'>";
+  mainPanel += "  <div class='panel-heading'>Search results for \"" + searchText + "\"" + "</div>";
+  mainPanel += "  <div class='panel-body'>";
+  
+  var i;
+  for (i = 0; i < searchResults[1].length; ++i) {
+    mainPanel += "    <div class='panel panel-default'>";
+    mainPanel += "      <div class='panel-heading'>" + searchResults[1][i] + "</div>";
+    mainPanel += "      <div class='panel-body'>" + searchResults[2][i] + "</div>";
+    mainPanel += "    </div>";
+  }
+  
+  mainPanel += "</div>";
+  
+  $("#" + this.DOMID).html(mainPanel);
   
 };
 
+
+
+var constructWikipediaSearchString = function(searchText) {
+  "use strict";
+  //https://en.wikipedia.org/w/api.php?action=opensearch&search=api&limit=10&namespace=0&format=json
+  var searchString = encodeURI(searchText.replace(" ", "+"));
+  
+  return "http://en.wikipedia.org/w/api.php?action=opensearch&search=" + searchString + "&limit=10&namespace=0&format=json";
+};
+
+var getSearchResultsFromWikipedia = function(searchText, searchResultsCallback) {
+  "use strict";
+  var searchCall = constructWikipediaSearchString(searchText);
+  $.ajax( {
+    dataType: "jsonp",
+    url: searchCall,
+    data: null,
+    success: function(obj) {
+    searchResultsCallback(obj);
+    }});
+};
+
 var searchModal = new SearchModal("searchModal");
+var searchResultsDisplay = new SearchResultsDisplay("searchResults");
 
 var setupSearchModal = function(searchModal) {
   "use strict";
   
   searchModal.searchCallback.push(function(inputText) {
-    console.log("search text: \"" + inputText + "\"");
+    
+    searchModal.hide();
+    
+    getSearchResultsFromWikipedia(inputText, function(resultsObj) {
+      
+      searchResultsDisplay.displaySearchResults(resultsObj);
+      
+    });
   });
 };
 
