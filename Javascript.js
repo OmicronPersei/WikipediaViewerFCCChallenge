@@ -6,13 +6,8 @@ function SearchModal(DOMID) {
   
   this.DOMID = DOMID;
   this.searchCallback = [];
-}
-
-SearchModal.prototype.display = function() {
-  "use strict";
+  this.randomArticleCallback = [];
   
-  $("#" + this.DOMID).modal("show");
-    
   var oThis = this;
   $("#" + this.DOMID + " .searchButton").on("click", function() {
     var i;
@@ -24,6 +19,21 @@ SearchModal.prototype.display = function() {
       }
     }
   });
+  
+  $("#" + this.DOMID + " .randomArticleButton").on("click", function() {
+    var i;
+    for (i = 0; i < oThis.randomArticleCallback.length; ++i) {
+      oThis.randomArticleCallback[i]();
+    }
+  });
+}
+
+SearchModal.prototype.display = function() {
+  "use strict";
+  
+  $("#" + this.DOMID).modal("show");
+  $("#" + this.DOMID + " .searchText").val("");
+  
 };
 
 SearchModal.prototype.hide = function() {
@@ -52,15 +62,18 @@ SearchResultsDisplay.prototype.displaySearchResults = function(searchResults) {
   
   var i;
   for (i = 0; i < searchResults[1].length; ++i) {
+    mainPanel += "  <a href='" + searchResults[3][i] + "' target='_blank'>";
     mainPanel += "    <div class='panel panel-default'>";
     mainPanel += "      <div class='panel-heading'>" + searchResults[1][i] + "</div>";
     mainPanel += "      <div class='panel-body'>" + searchResults[2][i] + "</div>";
     mainPanel += "    </div>";
+    mainPanel += "  </a>";
   }
   
   mainPanel += "</div>";
   
   $("#" + this.DOMID).html(mainPanel);
+  
   var oThis = this;
   $("#" + this.DOMID + " .searchAgainButton").on("click", function() {
     var i;
@@ -69,11 +82,6 @@ SearchResultsDisplay.prototype.displaySearchResults = function(searchResults) {
       searchCallsbacks[i]();
     }
   });
-};
-
-SearchResultsDisplay.prototype.startNewSearch = function() {
-  "use strict";
-  
   
 };
 
@@ -83,10 +91,9 @@ SearchResultsDisplay.prototype.clear = function() {
   $("#" + this.DOMID).html("");
 };
 
-
-
 var constructWikipediaSearchString = function(searchText) {
   "use strict";
+  //Example below
   //https://en.wikipedia.org/w/api.php?action=opensearch&search=api&limit=10&namespace=0&format=json
   var searchString = encodeURI(searchText.replace(" ", "+"));
   
@@ -95,7 +102,9 @@ var constructWikipediaSearchString = function(searchText) {
 
 var getSearchResultsFromWikipedia = function(searchText, searchResultsCallback) {
   "use strict";
+  
   var searchCall = constructWikipediaSearchString(searchText);
+  
   $.ajax( {
     dataType: "jsonp",
     url: searchCall,
@@ -104,9 +113,6 @@ var getSearchResultsFromWikipedia = function(searchText, searchResultsCallback) 
     searchResultsCallback(obj);
     }});
 };
-
-var searchModal = new SearchModal("searchModal");
-var searchResultsDisplay = new SearchResultsDisplay("searchResults");
 
 var setupSearchModal = function(searchModal, searchResultsDisplay) {
   "use strict";
@@ -122,6 +128,11 @@ var setupSearchModal = function(searchModal, searchResultsDisplay) {
       
     });
   });
+  
+  var domThis = this;
+  searchModal.randomArticleCallback.push(function () {
+    window.open("https://en.wikipedia.org/wiki/Special:Random", "_blank");
+  });
 };
 
 var setupSearchResultsDisplay = function(searchResultsDisplay, searchModal) {
@@ -134,6 +145,9 @@ var setupSearchResultsDisplay = function(searchResultsDisplay, searchModal) {
 
 $(document).ready(function() {
   "use strict";
+  
+  var searchModal = new SearchModal("searchModal");
+  var searchResultsDisplay = new SearchResultsDisplay("searchResults");
   
   setupSearchModal(searchModal, searchResultsDisplay);
   setupSearchResultsDisplay(searchResultsDisplay, searchModal);
