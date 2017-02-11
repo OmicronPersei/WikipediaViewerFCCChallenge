@@ -36,6 +36,7 @@ function SearchResultsDisplay(DOMID) {
   "use strict";
   
   this.DOMID = DOMID;
+  this.newSearchCallback = [];
 }
 
 SearchResultsDisplay.prototype.displaySearchResults = function(searchResults) {
@@ -45,7 +46,8 @@ SearchResultsDisplay.prototype.displaySearchResults = function(searchResults) {
   //Create panel to contain all of the search results.
   var mainPanel = "";
   mainPanel += "<div class='panel panel-default'>";
-  mainPanel += "  <div class='panel-heading'>Search results for \"" + searchText + "\"" + "</div>";
+  mainPanel += "  <div class='panel-heading'>Search results for \"" + searchText + "\"";
+  mainPanel += "<button class='btn btn-default searchAgainButton'>Search again</button></div>";
   mainPanel += "  <div class='panel-body'>";
   
   var i;
@@ -59,7 +61,26 @@ SearchResultsDisplay.prototype.displaySearchResults = function(searchResults) {
   mainPanel += "</div>";
   
   $("#" + this.DOMID).html(mainPanel);
+  var oThis = this;
+  $("#" + this.DOMID + " .searchAgainButton").on("click", function() {
+    var i;
+    var searchCallsbacks = oThis.newSearchCallback;
+    for (i = 0; i < searchCallsbacks.length; ++i) {
+      searchCallsbacks[i]();
+    }
+  });
+};
+
+SearchResultsDisplay.prototype.startNewSearch = function() {
+  "use strict";
   
+  
+};
+
+SearchResultsDisplay.prototype.clear = function() {
+  "use strict";
+  
+  $("#" + this.DOMID).html("");
 };
 
 
@@ -87,7 +108,7 @@ var getSearchResultsFromWikipedia = function(searchText, searchResultsCallback) 
 var searchModal = new SearchModal("searchModal");
 var searchResultsDisplay = new SearchResultsDisplay("searchResults");
 
-var setupSearchModal = function(searchModal) {
+var setupSearchModal = function(searchModal, searchResultsDisplay) {
   "use strict";
   
   searchModal.searchCallback.push(function(inputText) {
@@ -96,15 +117,28 @@ var setupSearchModal = function(searchModal) {
     
     getSearchResultsFromWikipedia(inputText, function(resultsObj) {
       
+      searchResultsDisplay.clear();
       searchResultsDisplay.displaySearchResults(resultsObj);
       
     });
   });
 };
 
+var setupSearchResultsDisplay = function(searchResultsDisplay, searchModal) {
+  "use strict";
+  
+  searchResultsDisplay.newSearchCallback.push(function() {
+    searchModal.display();
+  });
+};
+
 $(document).ready(function() {
   "use strict";
   
+  setupSearchModal(searchModal, searchResultsDisplay);
+  setupSearchResultsDisplay(searchResultsDisplay, searchModal);
+  
   searchModal.display();
-  setupSearchModal(searchModal);
+  
+  
 });
