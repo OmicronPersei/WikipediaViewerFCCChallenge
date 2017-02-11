@@ -1,10 +1,25 @@
 .searchResultsPanel {
   font-family: Segoe UI, sans-serif;
+  margin: 25px auto;
+  max-width: 900px;
+}
+
+.searchResultsPanel>.panel-body {
+  padding: 0px;
 }
 
 .searchResultsPanel>.panel-heading {
   font-size: 28px;
   font-weight: bold;
+}
+
+.searchResultsPanel>.panel-heading>.searchAgainButton {
+  margin-top: 3px;
+}
+
+
+.searchResultsPanel .searchResult {
+  margin: 20px;
 }
 
 .searchResultsPanel .searchResult>.panel-heading {

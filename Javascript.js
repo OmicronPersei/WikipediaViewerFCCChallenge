@@ -58,7 +58,7 @@ SearchResultsDisplay.prototype.displaySearchResults = function(searchResults) {
   mainPanel += "<div class='collapse searchResultsCollapse'>";
   mainPanel += "  <div class='panel panel-default searchResultsPanel'>";
   mainPanel += "    <div class='panel-heading'>Search results for \"" + searchText + "\"";
-  mainPanel += "    <button class='btn btn-default searchAgainButton'>Search again</button></div>";
+  mainPanel += "    <button class='btn btn-default searchAgainButton pull-right'>Search again</button></div>";
   mainPanel += "    <div class='panel-body'>";
   
   var i;
@@ -87,10 +87,22 @@ SearchResultsDisplay.prototype.displaySearchResults = function(searchResults) {
   
 };
 
-SearchResultsDisplay.prototype.clear = function() {
+SearchResultsDisplay.prototype.clear = function(finishedCallback) {
   "use strict";
   
-  $("#" + this.DOMID).html("");
+  var finishedCallbackRaised = false;
+  var oThis = this;
+  $("#" + this.DOMID + " .searchResultsCollapse").on("hidden.bs.collapse", function() {
+    $("#" + oThis.DOMID).html("");
+    finishedCallbackRaised = true;
+    finishedCallback();
+  });
+  
+  $("#" + this.DOMID + " .searchResultsCollapse").collapse("hide");
+  
+  if (!finishedCallbackRaised) {
+    finishedCallback();
+  }
 };
 
 var constructWikipediaSearchString = function(searchText) {
@@ -125,9 +137,9 @@ var setupSearchModal = function(searchModal, searchResultsDisplay) {
     
     getSearchResultsFromWikipedia(inputText, function(resultsObj) {
       
-      searchResultsDisplay.clear();
-      searchResultsDisplay.displaySearchResults(resultsObj);
-      
+      searchResultsDisplay.clear(function() {
+        searchResultsDisplay.displaySearchResults(resultsObj);
+      });
     });
   });
   
