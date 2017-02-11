@@ -1,0 +1,21 @@
+.searchResultsPanel {
+  font-family: Segoe UI, sans-serif;
+}
+
+.searchResultsPanel>.panel-heading {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.searchResultsPanel .searchResult>.panel-heading {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.searchResultsPanel .searchResult>.panel-body {
+  font-size: 16px
+}
+
+a>.searchResult>.panel-body {
+  color: #666;
+}

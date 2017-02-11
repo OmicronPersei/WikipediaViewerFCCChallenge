@@ -55,24 +55,26 @@ SearchResultsDisplay.prototype.displaySearchResults = function(searchResults) {
   var searchText = searchResults[0];
   //Create panel to contain all of the search results.
   var mainPanel = "";
-  mainPanel += "<div class='panel panel-default'>";
-  mainPanel += "  <div class='panel-heading'>Search results for \"" + searchText + "\"";
-  mainPanel += "<button class='btn btn-default searchAgainButton'>Search again</button></div>";
-  mainPanel += "  <div class='panel-body'>";
+  mainPanel += "<div class='collapse searchResultsCollapse'>";
+  mainPanel += "  <div class='panel panel-default searchResultsPanel'>";
+  mainPanel += "    <div class='panel-heading'>Search results for \"" + searchText + "\"";
+  mainPanel += "    <button class='btn btn-default searchAgainButton'>Search again</button></div>";
+  mainPanel += "    <div class='panel-body'>";
   
   var i;
   for (i = 0; i < searchResults[1].length; ++i) {
-    mainPanel += "  <a href='" + searchResults[3][i] + "' target='_blank'>";
-    mainPanel += "    <div class='panel panel-default'>";
-    mainPanel += "      <div class='panel-heading'>" + searchResults[1][i] + "</div>";
-    mainPanel += "      <div class='panel-body'>" + searchResults[2][i] + "</div>";
-    mainPanel += "    </div>";
-    mainPanel += "  </a>";
+    mainPanel += "    <a href='" + searchResults[3][i] + "' target='_blank'>";
+    mainPanel += "      <div class='panel panel-default searchResult'>";
+    mainPanel += "        <div class='panel-heading'>" + searchResults[1][i] + "</div>";
+    mainPanel += "        <div class='panel-body'>" + searchResults[2][i] + "</div>";
+    mainPanel += "      </div>";
+    mainPanel += "    </a>";
   }
   
-  mainPanel += "</div>";
+  mainPanel += "</div></div>";
   
   $("#" + this.DOMID).html(mainPanel);
+  $("#" + this.DOMID + " .searchResultsCollapse").collapse("show");
   
   var oThis = this;
   $("#" + this.DOMID + " .searchAgainButton").on("click", function() {
